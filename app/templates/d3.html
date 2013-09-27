@@ -1,0 +1,75 @@
+<!Doctype html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+        <script type="text/javascript" src="/static/js/d3.v3.min.js"></script>
+    </head>
+
+    <body>
+        {% set dataArray = [] %}
+        {% for app in data %}
+            {% set counter = [] %}
+            {% for stat in data[app] %}
+                {% do counter.append(data[app][stat])%}
+            {% endfor %}
+            {% do dataArray.append({"appname":app,"time":round(counter|sum/60)}) %}
+        {% endfor %}
+
+        <script>
+            var dataArray = {{dataArray|safe}};
+            var timeArray = [];
+            for(var t in dataArray){
+                timeArray.push(dataArray[t]["time"]);
+            };
+            var width = 1000;
+            var height = 1000;
+
+            var widthScale = d3.scale.linear()
+                .domain([0, d3.max(timeArray)])
+                .range([0, height]);
+
+            var colorScale = d3.scale.linear()
+                .domain([0, d3.max(timeArray)])
+                .range(["skyblue", "red"]);
+
+            var axis = d3.svg.axis()
+                .ticks(20)
+                .scale(widthScale);
+
+            var canvas = d3.select("body")
+                .append("svg")
+                .append("g")
+                    .attr("height", width)
+                    .attr("width", height)
+                    .attr("transform","translate(100,100)");
+
+
+            var bars = canvas.selectAll("rect")
+                .data(dataArray)
+                .enter()
+                    .append("rect")
+                    .attr("width", function (d) { return widthScale(d.time) })
+                    .attr("height", 40)
+                    .attr("y", function (d, i) { return 50*i })
+                    .attr("fill", function (d){ return colorScale(d.time); })
+                    .append("text")
+                        .text(function(d){return d.appname;})
+                        .attr("text-anchor","end")
+                        .attr("x",-10)
+                        .attr("dy","0.5em");
+
+
+            canvas.append("g")
+                .attr("transform", "translate(0,600)")
+                .call(axis);
+        </script>
+
+    </body>
+
+</html>
+
+
+
+
+
+
+

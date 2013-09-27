@@ -1,0 +1,47 @@
+<!Doctype html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+        <script type="text/javascript" src="/static/js/d3.v3.min.js"></script>
+    </head>
+
+    <body>
+        {% set dataArray = [] %}
+        {% for app in data %}
+            {% set counter = [] %}
+            {% for stat in data[app] %}
+                {% do counter.append(data[app][stat])%}
+            {% endfor %}
+            {% do dataArray.append({"appname":app,"time":round(counter|sum/60)}) %}
+        {% endfor %}
+
+        <script>
+
+            var canvas = d3.select("body")
+                            .append("svg")
+                            .attr("width", 500)
+                            .attr("height", 500);
+
+            var circle = canvas.append("circle")
+                            .attr("cx", 50)
+                            .attr("cy", 100)
+                            .attr("fill", "green")
+                            .attr("r", 25);
+            circle.transition()
+                .attr("cy", 250)
+                .transition()
+                .attr("cx", 200)
+                .each("end", function(){d3.select(this).attr("fill","red").style("opacity",0.5);});
+
+
+        </script>
+
+    </body>
+
+</html>
+
+
+
+
+
+
+

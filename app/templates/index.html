@@ -1,0 +1,64 @@
+<!Doctype html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+    <script type="text/javascript" src="/static/js/d3.v3.min.js"></script>
+</head>
+<body style="color:#444;font-family:sans-serif">
+    {% for user in data %}
+        {{user}}
+        {% for date in data[user] %}
+        {% if date == today %}
+            {% set total = [] %}
+            <ul>
+                {{date}}
+                {% for an in data[user][date] %}
+                    <ul>
+                        <br>{{an}}
+                        <ul>
+                            {% set counter = [] %}
+                            {% for as in data[user][date][an] %}
+                                <li>
+                                    {{as}} : <i>{{round(data[user][date][an][as]/60)}} min.</i>
+                                </li>
+                                {% do counter.append(data[user][date][an][as]) %}
+                            {% endfor %}
+                            <br>
+                            <b>Total : {{ round(counter|sum/60) }} mins</b>
+
+                            {% do total.append(round(counter|sum/60))%}
+                        </ul>
+                    </ul>
+                {%endfor%}
+            </ul>
+
+            <p><b>Total Time : {{total|sum}}</b></p>
+
+            {% set json = user_data(user, date) %}
+
+            <script type="text/javascript">
+            /*
+                var json = {{json|tojson|safe}};
+                var data = []
+                for(var appname in json){
+                    for(var appstat in json[appname]){
+                        data.push({app:appname, stat:appstat, val:json[appname][appstat]});
+                    };
+                };
+
+            */
+
+            </script>
+            {%endif%}
+        {%endfor%}
+    {%endfor%}
+
+
+</body>
+
+
+
+
+
+
+
+
